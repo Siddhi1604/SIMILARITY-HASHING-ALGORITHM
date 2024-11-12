@@ -1,0 +1,11 @@
+Flask
+Werkzeug
+ppdeep
+python-Levenshtein
+librosa
+numpy
+scipy
+soundfile
+py-tlsh
+opencv-python
+scikit-image

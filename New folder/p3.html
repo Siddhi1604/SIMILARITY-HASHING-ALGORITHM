@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Contact Us</title>
+    <style>
+      /* General Styling */
+      body {
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        margin: 0;
+        padding: 0;
+        background-color: #e6f2ff;
+        color: #333;
+      }
+
+      /* Container and Section Styling */
+      .container {
+        width: 85%;
+        margin: 0 auto;
+        padding: 50px 0;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+      }
+
+      /* Contact Us Header */
+      .contact-header {
+        text-align: center;
+        margin-bottom: 40px;
+      }
+
+      .contact-header h1 {
+        font-size: 36px;
+        margin-bottom: 10px;
+        color: #0066cc;
+      }
+
+      .contact-header p {
+        color: #666;
+        font-size: 18px;
+        max-width: 600px;
+        margin: 0 auto;
+      }
+
+      /* Contact Section */
+      .contact-section {
+        display: flex;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        width: 100%;
+        gap: 20px;
+      }
+
+      /* Get in Touch Section */
+      .contact-info {
+        width: 45%;
+        background: linear-gradient(135deg, #0066cc, #004d99);
+        padding: 20px;
+        box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
+        border-radius: 12px;
+        color: #fff;
+        transition: transform 0.3s ease;
+      }
+
+      .contact-info:hover {
+        transform: translateY(-5px);
+      }
+
+      .contact-info h2 {
+        font-size: 24px;
+        margin-bottom: 15px;
+        color: #fff;
+      }
+
+      .contact-info p {
+        color: #e6f2ff;
+        font-size: 16px;
+        line-height: 1.6;
+        margin-bottom: 20px;
+      }
+
+      .contact-info .info-item {
+        display: flex;
+        align-items: center;
+        margin-bottom: 15px;
+        font-size: 16px;
+      }
+
+      .contact-info .info-item i {
+        color: #ffcc00;
+        font-size: 22px;
+        margin-right: 10px;
+      }
+
+      /* Send a Message Form */
+      .contact-form {
+        width: 45%;
+        background-color: #fff;
+        padding: 30px;
+        box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
+        border-radius: 12px;
+        transition: transform 0.3s ease;
+      }
+
+      .contact-form:hover {
+        transform: translateY(-5px);
+      }
+
+      .contact-form h2 {
+        font-size: 24px;
+        margin-bottom: 15px;
+        color: #333;
+      }
+
+      .contact-form input,
+      .contact-form textarea {
+        width: 100%;
+        padding: 12px;
+        margin-bottom: 15px;
+        border: 1px solid #ddd;
+        border-radius: 6px;
+        font-size: 16px;
+        background-color: #f0f8ff;
+        transition: border-color 0.3s ease;
+      }
+
+      .contact-form input:focus,
+      .contact-form textarea:focus {
+        border-color: #0066cc;
+        outline: none;
+      }
+
+      .contact-form button {
+        width: 100%;
+        padding: 14px;
+        background: linear-gradient(135deg, #0066cc, #004d99);
+        color: #fff;
+        font-size: 18px;
+        border: none;
+        border-radius: 6px;
+        cursor: pointer;
+        transition: background 0.3s ease;
+      }
+
+      .contact-form button:hover {
+        background: linear-gradient(135deg, #004d99, #0066cc);
+      }
+
+      /* Success Message */
+      .success-message {
+        display: none;
+        color: green;
+        font-size: 16px;
+        margin-top: 20px;
+      }
+
+      /* Footer */
+      .footer {
+        text-align: center;
+        padding: 20px;
+        background-color: #333;
+        color: #fff;
+        margin-top: 30px;
+        font-size: 14px;
+      }
+
+      .footer a {
+        color: #0066cc;
+        text-decoration: none;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Contact Header -->
+    <div class="container">
+      <div class="contact-header">
+        <h1>Contact Us</h1>
+        <p>
+          If you have any questions, feel free to reach out. We're here to help
+          you every step of the way!
+        </p>
+      </div>
+
+      <!-- Contact Information and Form Section -->
+      <div class="contact-section">
+        <!-- Contact Information -->
+        <div class="contact-info">
+          <h2>Get In Touch</h2>
+          <p>
+            We’re available for inquiries, support, and general information.
+            Reach out and let’s connect!
+          </p>
+          <div class="info-item">
+            <i class="fas fa-map-marker-alt"></i>
+            <span>Address: 67,H-3,charusat university,Petlad</span>
+          </div>
+          <div class="info-item">
+            <i class="fas fa-phone"></i>
+            <span>Phone: 9558050204</span>
+          </div>
+          <div class="info-item">
+            <i class="fas fa-envelope"></i>
+            <span
+              >Email:
+              <a
+                href="mailto:support@subx.com"
+                style="color: #ffcc00; text-decoration: none"
+                >support@gmail.com</a
+              ></span
+            >
+          </div>
+        </div>
+
+        <!-- Contact Form -->
+        <div class="contact-form">
+          <h2>Send a Message</h2>
+          <form id="contactForm">
+            <input type="text" placeholder="Name" required />
+            <input type="email" placeholder="E-mail Address" required />
+            <textarea placeholder="Message" rows="5" required></textarea>
+            <button type="submit">Submit</button>
+          </form>
+          <div class="success-message" id="successMessage">
+            Your query has been submitted!
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="footer">
+      <p>© 2024 All rights reserved. | Privacy Policy</p>
+    </div>
+
+    <!-- Font Awesome Icons -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
+    />
+
+    <!-- JavaScript to handle form submission -->
+    <script>
+      document
+        .getElementById("contactForm")
+        .addEventListener("submit", function (event) {
+          event.preventDefault(); // Prevent the form from submitting the usual way
+          document.getElementById("successMessage").style.display = "block"; // Show the success message
+          this.reset(); // Clear the form inputs
+        });
+    </script>
+  </body>
+</html>

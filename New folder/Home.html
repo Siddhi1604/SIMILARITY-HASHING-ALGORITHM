@@ -1,0 +1,518 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Similarity Hashing</title>
+    <style>
+      /* Global Styles */
+      * {
+        box-sizing: border-box; /* Include padding and border in element's total width and height */
+      }
+      body {
+        margin: 0;
+        font-family: Arial, sans-serif;
+        background-color: bisque;
+        scroll-behavior: smooth; /* Smooth scrolling */
+      }
+      /* Navigation Bar */
+      ul {
+        list-style-type: none;
+        background-color: #ffffff;
+        margin: 0;
+        padding: 0;
+        overflow: hidden;
+        position: fixed; /* Fix the navbar at the top */
+        top: 0;
+        width: 100%;
+        z-index: 1000; /* Ensure it stays on top */
+        display: flex;
+        justify-content: center;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
+      }
+      li {
+        /* Removed float: left; since we're using flexbox */
+      }
+      li a {
+        display: block;
+        text-align: center;
+        font-size: 20px;
+        padding: 14px 20px;
+        color: rgb(0, 0, 0);
+        text-decoration: none;
+        transition: background-color 0.3s ease, color 0.3s ease;
+      }
+      li a:hover,
+      li a.active {
+        background-color: #4caf50; /* Changed to a green shade for better contrast */
+        color: white;
+      }
+
+      /* Section Styling */
+      .section {
+        width: 100%;
+        height: 100vh; /* Full viewport height */
+        padding: 80px 20px 20px 20px; /* Top padding accounts for fixed navbar */
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      /* Home Section Styling */
+      #Home {
+        background-color: white;
+        flex-direction: row;
+        gap: 20px; /* Added space between columns */
+      }
+
+      /* Text and Button Styles */
+      .text-content {
+        max-width: 50%;
+        text-align: left; /* Changed to left for better readability */
+      }
+
+      .text-content h1 {
+        font-size: 48px;
+        color: #333;
+        margin-bottom: 20px;
+      }
+
+      .text-content p {
+        font-size: 20px;
+        color: #555;
+        margin-bottom: 30px;
+      }
+
+      .text-content button {
+        padding: 10px 20px;
+        font-size: 18px;
+        color: white;
+        background-color: #4caf50; /* Green button for better contrast */
+        border: none;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+      }
+
+      .text-content button:hover {
+        background-color: #45a049;
+      }
+
+      /* Icon Styling */
+      .icon {
+        display: block;
+        margin: 0 auto 20px auto; /* Center the icon */
+        width: 200px; /* Set the width of the icon */
+        height: 200px; /* Set the height of the icon */
+      }
+
+      /* Image Section */
+      .image-content img {
+        max-width: 100%;
+        height: auto;
+      }
+
+      /* About Us Section Styling */
+      #About {
+        background-color: #4936b5;
+        flex-direction: row;
+        color: white; /* Ensuring text is readable on dark background */
+      }
+
+      .about-content {
+        display: flex;
+        align-items: center;
+        max-width: 1200px;
+        width: 100%;
+        gap: 20px; /* Space between image and text */
+      }
+
+      .about-image {
+        flex: 1;
+        padding: 20px;
+      }
+
+      .about-image img {
+        width: 100%;
+        height: auto;
+        border-radius: 10px;
+      }
+
+      .about-text {
+        flex: 1;
+        padding: 20px;
+        text-align: left;
+      }
+
+      .about-text h1 {
+        margin-top: 0;
+        font-size: 36px;
+      }
+
+      .about-text p {
+        font-size: 18px;
+        line-height: 1.6;
+      }
+
+      /* Projects Section with Full Background Image */
+      #Projects {
+        position: relative;
+        background: url("I10.png") no-repeat center center / cover;
+        text-align: center;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-direction: column;
+        padding: 0; /* Remove additional padding */
+      }
+
+      /* Optional Background Overlay for Readability */
+      #Projects::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(
+          0,
+          0,
+          0,
+          0.5
+        ); /* Dark overlay for better text readability */
+        z-index: 0; /* Ensure overlay appears below the content */
+      }
+
+      /* Centered Content Styling */
+      .check-similarity-content {
+        position: relative;
+        z-index: 1; /* Ensure content appears above the overlay */
+        max-width: 600px;
+        padding: 20px;
+        background-color: rgba(
+          255,
+          255,
+          255,
+          0.9
+        ); /* Light background for text box */
+        border-radius: 10px;
+        text-align: center;
+      }
+
+      .check-similarity-content h1 {
+        margin-top: 0;
+        font-size: 48px;
+        color: #000000;
+      }
+
+      .check-similarity-content p {
+        font-size: 20px;
+        margin: 20px 0;
+        line-height: 1.6;
+        color: #000000;
+      }
+
+      .check-similarity-content button {
+        padding: 10px 20px;
+        font-size: 18px;
+        color: white;
+        background-color: #4936b5;
+        border: none;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+        align-content: center;
+      }
+
+      .check-similarity-content button:hover {
+        background-color: #8f4cca;
+      }
+
+      /* Contact Section Styling */
+      #Contacts {
+        display: flex;
+        background-color: #f0f0f0; /* Lighter background for better contrast */
+        padding: 0; /* Remove padding from the section itself */
+        align-items: center;
+        flex-direction: row;
+        gap: 20px; /* Space between image and text */
+      }
+
+      /* Contact Content Wrapper */
+      .contact-content {
+        display: flex;
+        width: 100%;
+        height: 100%;
+        /* gap: 20px;  */ /* Space between image and text */
+      }
+
+      /* Left Side Image Styling */
+      .contact-image {
+        flex: 1; /* Take up half the width */
+        overflow: hidden;
+      }
+
+      .contact-image .background-image {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+
+      /* Right Side Text Content Styling */
+      .contact-text {
+        flex: 1;
+        padding: 40px;
+        text-align: center;
+        background-color: #4936b5;
+        color: white;
+
+        /* Added Flexbox Properties for Vertical Centering */
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center; /* Centers items horizontally */
+      }
+
+      .contact-text h1 {
+        margin-top: 0;
+        font-size: 36px;
+      }
+
+      .contact-text p {
+        color: rgb(
+          255,
+          255,
+          255
+        ); /* Ensure text is readable on dark background */
+        font-size: 18px;
+        line-height: 1.6;
+        max-width: 600px; /* Limit width for better readability */
+      }
+
+      .contact-text button {
+        padding: 10px 20px;
+        font-size: 18px;
+        color: white;
+        background-color: #333;
+        border: none;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+        margin-top: 20px; /* Space above the button */
+      }
+
+      .contact-text button:hover {
+        background-color: #555;
+      }
+
+      /* Section Header and Paragraph Styling */
+      .section h1 {
+        text-align: center;
+        margin-top: 0;
+      }
+
+      .section p {
+        max-width: 800px;
+        margin: 20px auto;
+        font-size: 18px;
+        line-height: 1.6;
+      }
+
+      /* Responsive Adjustments */
+      @media (max-width: 1024px) {
+        .text-content,
+        .about-text,
+        .contact-text {
+          max-width: 90%;
+        }
+      }
+
+      @media (max-width: 768px) {
+        .about-content,
+        .contact-content,
+        #Home {
+          flex-direction: column;
+          text-align: center;
+        }
+
+        .text-content,
+        .about-text,
+        .contact-text {
+          max-width: 100%;
+          padding: 20px;
+        }
+
+        .icon {
+          width: 150px;
+          height: 150px;
+        }
+
+        .check-similarity-content h1,
+        .check-similarity-content p {
+          color: #fff;
+        }
+
+        /* Adjust button sizes for smaller screens */
+        .text-content button,
+        .check-similarity-content button,
+        .contact-text button {
+          width: 100%;
+          max-width: 300px;
+        }
+      }
+
+      @media (max-width: 480px) {
+        .text-content h1,
+        .about-text h1,
+        .check-similarity-content h1,
+        .contact-text h1 {
+          font-size: 28px;
+        }
+
+        .text-content p,
+        .about-text p,
+        .check-similarity-content p,
+        .contact-text p {
+          font-size: 16px;
+        }
+
+        .text-content button,
+        .check-similarity-content button,
+        .contact-text button {
+          font-size: 16px;
+          padding: 8px 16px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Navigation Bar -->
+    <ul>
+      <li><a class="active" href="#Home">Home</a></li>
+      <li><a href="#About">About</a></li>
+      <li><a href="#Projects">Check Similarity</a></li>
+      <li><a href="#Contacts">Contact Us</a></li>
+    </ul>
+
+    <!-- Home Section -->
+    <div id="Home" class="section">
+      <div class="text-content">
+        <img src="plagiarism.png" alt="Similarity Checker Icon" class="icon" />
+        <h1>Similarity Checker Free | Accurate with Percentage</h1>
+        <p>
+          Discover how our similarity checker efficiently compares files to
+          identify similarities and differences. Our tool provides accurate and
+          reliable results for all your comparison needs.
+        </p>
+      </div>
+      <div class="image-content">
+        <img src="I1.svg" alt="Similarity Checker Illustration" />
+      </div>
+    </div>
+
+    <!-- About Section -->
+    <div id="About" class="section">
+      <div class="about-content">
+        <!-- Left Side Image -->
+        <div class="about-image">
+          <img src="I8.jpg" alt="About Us Image" />
+        </div>
+        <!-- Right Side Text Content -->
+        <div class="about-text">
+          <h1>About Us</h1>
+          <p>
+            At Similarity Hashing, we specialize in delivering advanced file
+            comparison solutions tailored for text, audio, video, and more. Our
+            mission is to empower individuals and businesses to optimize their
+            processes by providing cutting-edge tools for accurate and efficient
+            similarity detection. Whether you're managing content, ensuring data
+            integrity, or streamlining workflows, we are here to help you save
+            time and enhance productivity with precision-driven technology. Join
+            us in redefining the way you compare and analyze files.
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Projects (Check Similarity) Section -->
+    <div id="Projects" class="section">
+      <div class="check-similarity-content">
+        <!-- Centered Text Content -->
+        <div class="text-overlay">
+          <h1>Check Similarity</h1>
+          <p>
+            Use our similarity checker to effortlessly upload and compare two
+            files. Powered by advanced algorithms, our tool dives deep into the
+            content to deliver a comprehensive report, pinpointing similarities
+            . With precise analysis at your fingertips, you’ll have the insights
+            you need to make informed decisions quickly and confidently.
+          </p>
+          <button onclick="window.location.href='http://127.0.0.1:5000'">
+            Try It Now
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Contact Us Section -->
+    <div id="Contacts" class="section">
+      <div class="contact-content">
+        <!-- Left Side Background Image -->
+        <div class="contact-image">
+          <img src="I4.png" alt="Contact Background" class="background-image" />
+        </div>
+        <!-- Right Side Text Content -->
+        <div class="contact-text">
+          <h1>We’re Here for You!</h1>
+          <p>
+            Have questions about our similarity checker, need technical support,
+            or interested in partnership opportunities? We’re here to help! Your
+            experience and satisfaction are our top priorities. Whether you’re
+            looking for guidance, troubleshooting, or collaboration, our team is
+            ready to assist you every step of the way. We value your feedback
+            and are committed to making your journey with us smooth and
+            rewarding.
+          </p>
+          <button onclick="window.location.href='Contact_us_page.html'">
+            Reach Us Here
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Accessibility Enhancements: ARIA Roles and Skip Navigation
+    <a href="#Home" class="skip-link">Skip to content</a> -->
+
+    <script>
+      // Highlight active navigation link based on scroll position
+      window.addEventListener("scroll", function () {
+        const sections = document.querySelectorAll(".section");
+        const navLinks = document.querySelectorAll("ul li a");
+
+        let current = "";
+
+        sections.forEach((section) => {
+          const sectionTop = section.offsetTop - 100; // Adjusted for navbar height
+          if (pageYOffset >= sectionTop) {
+            current = section.getAttribute("id");
+          }
+        });
+
+        navLinks.forEach((link) => {
+          link.classList.remove("active");
+          if (link.getAttribute("href").substring(1) === current) {
+            link.classList.add("active");
+          }
+        });
+      });
+
+      // Accessibility: Focus styles for keyboard navigation
+      const links = document.querySelectorAll("a, button");
+      links.forEach((link) => {
+        link.addEventListener("focus", () => {
+          link.style.outline = "2px solid #4CAF50";
+        });
+        link.addEventListener("blur", () => {
+          link.style.outline = "none";
+        });
+      });
+    </script>
+  </body>
+</html>

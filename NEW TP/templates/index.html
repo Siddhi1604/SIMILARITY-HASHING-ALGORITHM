@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>File Similarity Analyzer</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        background: linear-gradient(135deg, #87ceeb, #e0f6ff);
+        margin: 0;
+        padding: 0;
+        min-height: 100vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+      .container {
+        background-color: #0066cc;
+        border-radius: 10px;
+        box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
+        padding: 40px;
+        max-width: 500px;
+        width: 90%;
+        text-align: center;
+        color: #ffffff;
+      }
+      h1 {
+        margin-bottom: 20px;
+        font-size: 28px;
+      }
+      #file-type-buttons {
+        display: flex;
+        justify-content: center;
+        margin-bottom: 20px;
+      }
+      #file-type-buttons button {
+        padding: 10px 20px;
+        margin: 5px;
+        font-size: 16px;
+        cursor: pointer;
+        border: 2px solid #ffffff;
+        background-color: transparent;
+        color: #ffffff;
+        transition: all 0.3s;
+        border-radius: 5px;
+      }
+      .selected-button {
+        background-color: #ffffff !important;
+        color: #0066cc !important;
+        font-weight: bold;
+      }
+      #upload-form {
+        background-color: rgba(255, 255, 255, 0.1);
+        padding: 20px;
+        border-radius: 5px;
+        margin-top: 20px;
+      }
+      #upload-form div {
+        margin-bottom: 15px;
+      }
+      #upload-form label {
+        display: block;
+        margin-bottom: 5px;
+        color: #ffffff;
+      }
+      #upload-form input[type="file"] {
+        width: 100%;
+        padding: 8px;
+        border: 1px solid #ffffff;
+        border-radius: 3px;
+        background-color: rgba(255, 255, 255, 0.1);
+        color: #ffffff;
+      }
+      #upload-form button {
+        background-color: #ffffff;
+        color: #0066cc;
+        border: none;
+        padding: 10px 20px;
+        font-size: 16px;
+        cursor: pointer;
+        border-radius: 3px;
+        transition: background-color 0.3s;
+      }
+      #upload-form button:hover {
+        background-color: #f0f0f0;
+      }
+      #result {
+        margin-top: 20px;
+        padding: 15px;
+        background-color: rgba(255, 255, 255, 0.1);
+        border-radius: 5px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1>File Similarity Analyzer</h1>
+      <p>Select the type of files you want to compare:</p>
+      <div id="file-type-buttons">
+        <button
+          type="button"
+          onclick="selectFileType('audio')"
+          id="audio-button"
+        >
+          Audio Files
+        </button>
+        <button
+          type="button"
+          onclick="selectFileType('video')"
+          id="video-button"
+        >
+          Video Files
+        </button>
+        <button type="button" onclick="selectFileType('text')" id="text-button">
+          Text Files
+        </button>
+      </div>
+      <form
+        id="upload-form"
+        action="/"
+        method="post"
+        enctype="multipart/form-data"
+        style="display: none"
+      >
+        <input type="hidden" id="file-type" name="file-type" value="" />
+        <div>
+          <label for="file1">File 1:</label>
+          <input type="file" id="file1" name="file1" required />
+        </div>
+        <div>
+          <label for="file2">File 2:</label>
+          <input type="file" id="file2" name="file2" required />
+        </div>
+        <button type="submit">Compare Files</button>
+      </form>
+      <div id="result"></div>
+    </div>
+    <script>
+      function selectFileType(type) {
+        document.getElementById("file-type").value = type;
+        document.getElementById("upload-form").style.display = "block";
+
+        const fileInputs = document.querySelectorAll('input[type="file"]');
+        let acceptedTypes = "";
+        switch (type) {
+          case "audio":
+            acceptedTypes = ".mp3,.wav";
+            break;
+          case "video":
+            acceptedTypes = ".mp4,.avi,.mov";
+            break;
+          case "text":
+            acceptedTypes = ".txt,.pdf,.doc,.docx";
+            break;
+        }
+        fileInputs.forEach((input) => (input.accept = acceptedTypes));
+
+        // Highlight the selected button
+        const buttons = document.querySelectorAll("#file-type-buttons button");
+        buttons.forEach((button) => {
+          if (button.id === `${type}-button`) {
+            button.classList.add("selected-button");
+          } else {
+            button.classList.remove("selected-button");
+          }
+        });
+      }
+
+      document
+        .getElementById("upload-form")
+        .addEventListener("submit", function (e) {
+          e.preventDefault();
+
+          // Add file size check
+          const file1 = document.getElementById("file1").files[0];
+          const file2 = document.getElementById("file2").files[0];
+          const maxSize = 500 * 1024 * 1024; // 500 MB in bytes
+
+          if (file1.size > maxSize || file2.size > maxSize) {
+            alert(
+              "File size exceeds the limit of 500 MB. Please choose smaller files."
+            );
+            return;
+          }
+
+          const formData = new FormData(this);
+
+          fetch("/", {
+            method: "POST",
+            body: formData,
+          })
+            .then((response) => response.json())
+            .then((data) => {
+              if (data.error) {
+                document.getElementById(
+                  "result"
+                ).innerHTML = `<p style="color: red;">${data.error}</p>`;
+              } else {
+                document.getElementById("result").innerHTML = `
+              <h2>Similarity Report</h2>
+              <p><strong>File 1:</strong> ${data.file1}</p>
+              <p><strong>File 2:</strong> ${data.file2}</p>
+              <p><strong>File Type:</strong> ${data.file_type}</p>
+              <p><strong>Algorithm:</strong> ${data.algorithm}</p>
+              <p><strong>Similarity Score:</strong> ${data.similarity_score}%</p>
+              <p><strong>Insights:</strong> ${data.insights}</p>
+            `;
+              }
+            })
+            .catch((error) => {
+              console.error("Error:", error);
+              document.getElementById("result").innerHTML =
+                '<p style="color: red;">An error occurred while processing your request.</p>';
+            });
+        });
+
+      // Add event listeners for file inputs
+      document
+        .getElementById("file1")
+        .addEventListener("change", checkFileSize);
+      document
+        .getElementById("file2")
+        .addEventListener("change", checkFileSize);
+
+      function checkFileSize(event) {
+        const file = event.target.files[0];
+        const maxSize = 500 * 1024 * 1024; // 500 MB in bytes
+
+        if (file && file.size > maxSize) {
+          alert(
+            `File "${file.name}" exceeds the size limit of 500 MB. Please choose a smaller file.`
+          );
+          event.target.value = ""; // Clear the file input
+        }
+      }
+    </script>
+  </body>
+</html>
